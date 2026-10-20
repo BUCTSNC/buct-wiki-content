@@ -1,0 +1,35 @@
+name: Trigger release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  trigger:
+    if: github.repository == 'BUCTSNC/buct-wiki-content'
+    name: Notify the template repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Create release token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3
+        with:
+          client-id: ${{ vars.HELPER_APP_CLIENT_ID }}
+          private-key: ${{ secrets.HELPER_APP_PRIVATE_KEY }}
+          owner: BUCTSNC
+          repositories: buct-wiki
+          permission-contents: write
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            await github.rest.repos.createDispatchEvent({
+              owner: 'BUCTSNC', repo: 'buct-wiki',
+              event_type: 'content-updated',
+            });

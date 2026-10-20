@@ -1,0 +1,19 @@
+name: PR preview deploy
+
+on:
+  workflow_run:
+    workflows: [PR preview build]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+  deployments: write
+
+jobs:
+  deploy:
+    if: github.repository == 'BUCTSNC/buct-wiki-content'
+    uses: BUCTSNC/buct-wiki/.github/workflows/pr-preview-deploy.yml@main
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
