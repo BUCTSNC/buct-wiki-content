@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  merge_group:
+    types: [checks_requested]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: content-build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    uses: BUCTSNC/buct-wiki/.github/workflows/build.yml@main
+    with:
+      content-only: true
+      artifact-name: ${{ github.event_name == 'pull_request' && 'pr-preview' || '' }}

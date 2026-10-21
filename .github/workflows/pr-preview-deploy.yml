@@ -2,7 +2,7 @@ name: PR preview deploy
 
 on:
   workflow_run:
-    workflows: [PR preview build]
+    workflows: [CI]
     types: [completed]
 
 permissions:
